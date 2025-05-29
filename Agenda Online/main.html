@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcador de Aulas importantes!</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #0056b3; }
+        form p { margin-bottom: 10px; }
+        label { display: inline-block; margin-bottom: 5px; font-weight: bold;}
+        input[type="text"], input[type="date"], input[type="number"] {
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] { margin-right: 5px; vertical-align: middle; }
+        input[type="submit"], button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover, button:hover { background-color: #0056b3; }
+        button#Deletar { background-color: #ff0000;}
+        button#Deletar:hover { background-color: #a90000;}
+        .atendimento-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;}
+        pre {
+            background-color: #e9ecef;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #tarefaAtendidaNome { font-style: italic; color: #555; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Anotar aulas/tarefas importantes</h1>
+        <form id="formTarefa">
+            <p>
+                <label for="descricao">O que vai ter de importante:</label>
+                <br>
+                <input type="text" id="descricao" required autofocus>
+            </p>
+            <p>
+                <label for="data">Quando vai acontecer:</label><br>
+                <input type="date" id="data" required>
+            </p>
+            <p>
+                <input type="checkbox" id="importante">
+                <label for="importante" style="font-weight: normal;">É algo de extrema importância?</label>
+            </p>
+            <p>
+                <input type="submit" value="Adicionar Tarefa">
+            </p>
+        </form>
+
+        <h2>Lista de Tarefas Pendentes:</h2>
+        <pre id="listaDeTarefas"></pre>
+
+        <div class="atendimento-section">
+            <h2>Atender Tarefa</h2>
+            <p>
+                <label for="numeroTarefaAtender">Número da tarefa para ser deletada:</label>
+                <input type="number" id="numeroTarefaAtender" min="1" style="width: 80px; margin-right:10px;">
+                <button id="Deletar">Deletar Tarefa</button>
+            </p>
+            <h3>Tarefa Atendida Recentemente:
+                <span id="tarefaAtendidaNome">Nenhuma</span>
+            </h3>
+        </div>
+    </div>
+
+    <script>
+        const frm = document.getElementById("formTarefa");
+        const inpDescricao = document.getElementById("descricao");
+        const inpData = document.getElementById("data");
+        const inpImportante = document.getElementById("importante");
+
+        const respLista = document.getElementById("listaDeTarefas");
+        const inpNumeroTarefaAtender = document.getElementById("numeroTarefaAtender");
+        const Deletar = document.getElementById("Deletar");
+        const respTarefaAtendida = document.getElementById("tarefaAtendidaNome");
+
+        let tarefas = [];
+
+
+        function salvarTarefas() {
+            localStorage.setItem('tarefasMarcador', JSON.stringify(tarefas));
+        }
+        
+        function carregarTarefas() {
+            const tarefasSalvas = localStorage.getItem('tarefasMarcador');
+            if (tarefasSalvas) {
+                tarefas = JSON.parse(tarefasSalvas);
+            }
+            exibirTarefas();
+        }
+
+
+        frm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const descricao = inpDescricao.value;
+            const data = inpData.value;
+            const importante = inpImportante.checked;
+
+            tarefas.push({
+                descricao: descricao,
+                data: data,
+                importante: importante,
+            });
+
+            exibirTarefas();
+            salvarTarefas();
+
+            frm.reset();
+            inpDescricao.focus();
+        });
+
+        Deletar.addEventListener("click", () => {
+            if (tarefas.length === 0) {
+                alert("Não há tarefas na lista para atender.");
+                respTarefaAtendida.innerText = "Nenhuma";
+                inpNumeroTarefaAtender.value = "";
+                return;
+            }
+
+            const numeroParaAtender = parseInt(inpNumeroTarefaAtender.value);
+
+            if (isNaN(numeroParaAtender) || numeroParaAtender < 1 || numeroParaAtender > tarefas.length) {
+                alert("Por favor, insira um número de tarefa válido da lista.");
+                inpNumeroTarefaAtender.focus();
+                return;
+            }
+
+            const indiceParaRemover = numeroParaAtender - 1;
+            const tarefaAtendidaArray = tarefas.splice(indiceParaRemover, 1);
+
+            if (tarefaAtendidaArray.length > 0) {
+                const tarefaObj = tarefaAtendidaArray[0];
+                respTarefaAtendida.innerText = `${tarefaObj.descricao} (Data: ${formatarData(tarefaObj.data)}) ${tarefaObj.importante ? "[EXTREMA IMPORTÂNCIA]" : ""}`;
+            }
+
+            exibirTarefas();
+            salvarTarefas();
+            inpNumeroTarefaAtender.value = "";
+            if (tarefas.length > 0) {
+                 inpNumeroTarefaAtender.focus();
+            } else {
+                 inpDescricao.focus();
+            }
+        });
+
+        function exibirTarefas() {
+            let listaConteudo = "";
+            if (tarefas.length === 0) {
+                listaConteudo = "Nenhuma tarefa pendente.";
+            } else {
+                tarefas.forEach((tarefa, i) => {
+                    listaConteudo += `${i + 1}. ${tarefa.descricao} - Data: ${formatarData(tarefa.data)} ${tarefa.importante ? "🔥 (Urgente!)" : ""}\n`;
+                });
+            }
+            respLista.innerText = listaConteudo;
+        }
+
+        function formatarData(dataInput) {
+            if (!dataInput) return "N/A";
+            const [ano, mes, dia] = dataInput.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        carregarTarefas();
+    </script>
+</body>
+</html>
