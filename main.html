@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Online</title>
+    <style>
+        /*---Outros---*/
+        form p { margin-bottom: 10px; text-align: left;}
+        #theme-toggle {
+            position:absolute;
+            top: 20px;
+            right: 20px;
+            width:60px;
+            height:60px;
+            background-color: #9a1fff;;
+        }
+        #theme-toggle:hover {
+            background-color: #6b1ee9;
+        }
+        #theme-toggle img {
+            width: 100%;
+            height:100%;
+            object-fit: contain;
+        }
+        
+        /*---Light Mode---*/ 
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container {
+            position: relative;
+            background-color: #fff;
+            text-align: left;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                 }
+        h1, h2 { color: #0056b3;}
+        label { display: inline-block; margin-bottom: 5px; font-weight: bold;}
+        input[type="text"], input[type="date"], input[type="number"] {
+            width: calc(30% - 22px);
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"], button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+            text-align: left;
+        }
+        input[type="submit"]:hover, button:hover { background-color: #0056b3; }
+        button#Deletar { background-color: #ff0000;}
+        button#Deletar:hover { background-color: #a90000;}
+        .atendimento-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;}
+        pre {
+            background-color: #e9ecef;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+        }
+        #tarefaAtendidaNome { font-style: italic; color: #555; }
+        #customizadoText {
+            width: calc(280% - 22px);
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+/*---Dark Mode---*/
+
+body.dark-mode {
+    background-color: #121212;
+    color: #c300ff; 
+}
+
+body.dark-mode .container {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+    color: #8c00ff;
+}
+
+body.dark-mode label {
+    color: #de8af8; 
+}
+body.dark-mode input[type="text"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="number"] {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+body.dark-mode input[type="submit"], button {
+        padding: 10px 15px;
+        background-color: #9a1fff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: background-color 0.3s ease;
+        text-align: left;
+        }
+body.dark-mode input[type="submit"]:hover, button:hover { background-color: #6b1ee9; }
+body.dark-mode button#Deletar {
+    background-color: #c13500;
+}
+body.dark-mode button#Deletar:hover {
+    background-color: #a02c00;
+}
+body.dark-mode .atendimento-section {
+    border-top: 1px solid #444;
+}
+body.dark-mode pre {
+    background-color: #2c2c2c;
+    color: #f1f1f1;
+    border: 1px solid #444;
+}
+
+body.dark-mode #tarefaAtendidaNome {
+    color: #aaa;
+}
+body.dark-mode  #theme-toggle {
+            background-color:#007bff;
+        }
+body.dark-mode #theme-toggle:hover {
+            background-color: #0056b3;
+        }
+body.dark-mode #theme-toggle img {
+            width: 100%;
+            height:100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Agenda Online</h1>
+        <button id="theme-toggle"><img id="theme-icon" src="https://i.imgur.com/FmE3oGv.png"></button>
+        <form id="formTarefa">
+            
+            <p>
+                <label for="descricao">Título:</label>
+                <br>
+                <input type="text" id="descricao" required autofocus>
+            </p>
+            <p>
+                <label for="data">Data de Início:</label><br>
+                <input type="date" id="data" required>
+            </p>
+            <p>
+                <label for="data2">Data de Finalização:</label><br>
+                <input type="date" id="data2" required>
+            </p>
+            <h2>Marcadores</h2>
+            <p>
+                <input name="marcador" type="radio" id="urgente" value="urgente">
+                <label for="urgente" style="font-weight: normal;">Urgente</label>
+            </p>
+            <p>
+                <input name="marcador" type="radio" id="importante" value="importante">
+                <label for="importante"  style="font-weight: normal;">Importante</label>
+            </p>
+            <p>
+                <input name="marcador" type="radio" id="relevante" value="relevante">
+                <label for="relevante" style="font-weight: normal;">Relevante</label>
+            </p>
+            <p>
+          <input name="marcador" value="custom" type="radio" id="customizadoRadio">
+          <label for="customizadoRadio" style="font-weight: normal;">
+            Customizado
+          </label>
+            </p>
+            <p id="formTarefa">
+          <label for="customizadoText" style="font-weight: normal;">
+            <input type="text" id="customizadoText" disabled> </label>
+        </p>
+            
+          
+            <p>
+                <input type="submit" value="Adicionar">
+            </p>
+        </form>
+
+        <h2>Lista de Tarefas Pendentes:</h2>
+        <pre id="listaDeTarefas"></pre>
+
+        <div class="atendimento-section">
+            <h2>Atender Tarefa</h2>
+            <p>
+                <label for="numeroTarefaAtender">Número da tarefa para ser deletada:</label>
+                <input type="number" id="numeroTarefaAtender" min="1" style="width: 80px; margin-right:10px;">
+                <button id="Deletar">Deletar Tarefa</button>
+            </p>
+            <h3>Tarefa Atendida Recentemente:
+                <span id="tarefaAtendidaNome">Nenhuma</span>
+            </h3>
+        </div>
+    </div>
+
+    <script>
+const themeToggleBtn = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById("theme-icon");
+const bodyEl = document.body;
+
+const iconeLua = "https://i.imgur.com/FmE3oGv.png";
+const iconeSol = "https://i.imgur.com/LKWzVff.png";
+function setDarkMode(isDark) {
+    if (isDark) {
+        bodyEl.classList.add("dark-mode");
+        themeIcon.src = iconeSol;
+        localStorage.setItem("theme", "dark");
+    } else {
+        bodyEl.classList.remove("dark-mode");
+        themeIcon.src= iconeLua;
+        localStorage.setItem("theme", "light");
+    }
+}
+themeToggleBtn.addEventListener("click", () => {
+    const isDarkMode = !bodyEl.classList.contains("dark-mode");
+    setDarkMode(isDarkMode);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        setDarkMode(true);
+    } else {
+        setDarkMode(false);
+    }
+});
+        const frm = document.getElementById("formTarefa");
+        const inpDescricao = document.getElementById("descricao");
+        const inpData = document.getElementById("data");
+
+        const respLista = document.getElementById("listaDeTarefas");
+        const inpNumeroTarefaAtender = document.getElementById("numeroTarefaAtender");
+        const Deletar = document.getElementById("Deletar");
+        const respTarefaAtendida = document.getElementById("tarefaAtendidaNome");
+
+        const radios = document.querySelectorAll('input[name="marcador"]')
+        const campoCustom = document.getElementById("customizadoText")
+        const radioCustom = document.getElementById("customizadoRadio")
+
+        radios.forEach(radio => {
+            radio.addEventListener("change", () => {
+                if (radioCustom.checked) {
+                    campoCustom.disabled = false;
+                    campoCustom.focus();
+                }
+                else {  
+                    campoCustom.disabled = true;
+                    campoCustom.value = "";
+                }
+            });
+        });
+        let tarefas = [];
+
+
+        function salvarTarefas() {
+            localStorage.setItem('tarefasMarcador', JSON.stringify(tarefas));
+        }
+        
+        function carregarTarefas() {
+            const tarefasSalvas = localStorage.getItem('tarefasMarcador');
+            if (tarefasSalvas) {
+                tarefas = JSON.parse(tarefasSalvas);
+            }
+            exibirTarefas();
+        }
+
+
+        frm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const descricao = inpDescricao.value;
+            const dataInicio = inpData.value;
+            const dataFinal = document.getElementById("data2").value;
+            const emojisMarcadores = {
+                "urgente": "🔥 Urgente",
+                "importante": "⭐ Importante",
+                "relevante": "💡 Relevante"
+            };
+            
+            let marcadorTarefa = "";
+            const radioSelecionado = document.querySelector('input[name="marcador"]:checked');
+
+            if (radioSelecionado) {
+                if (radioSelecionado.id == "customizadoRadio") {
+                    marcadorTarefa = campoCustom.value.trim();
+                    if (!marcadorTarefa) {
+                        alert("Nome do campo customizado faltando!")
+                        campoCustom.focus();
+                        return;
+                    }
+                } else {
+                    marcadorTarefa = radioSelecionado.value;
+                }
+            }
+
+            tarefas.push({
+                descricao: descricao,
+                dataInicio: dataInicio,
+                dataFinal: dataFinal,
+                marcador: marcadorTarefa,
+            });
+
+            exibirTarefas();
+            salvarTarefas();
+
+            frm.reset();
+            campoCustom.disabled = true;
+            campoCustom.value = "";
+            inpDescricao.focus();
+        });
+
+        Deletar.addEventListener("click", () => {
+            if (tarefas.length === 0) {
+                alert("Não há tarefas na lista para atender.");
+                respTarefaAtendida.innerText = "Nenhuma";
+                inpNumeroTarefaAtender.value = "";
+                return;
+            }
+
+            const numeroParaAtender = parseInt(inpNumeroTarefaAtender.value);
+
+            if (isNaN(numeroParaAtender) || numeroParaAtender < 1 || numeroParaAtender > tarefas.length) {
+                alert("Por favor, insira um número de tarefa válido da lista.");
+                inpNumeroTarefaAtender.focus();
+                return;
+            }
+
+            const indiceParaRemover = numeroParaAtender - 1;
+            const tarefaAtendidaArray = tarefas.splice(indiceParaRemover, 1);
+
+            if (tarefaAtendidaArray.length > 0) {
+                const tarefaObj = tarefaAtendidaArray[0];
+                let marcadorTexto = tarefaObj.marcador ? `[${tarefaObj.marcador}]`:"";
+                respTarefaAtendida.innerText = `${marcadorTexto} ${tarefaObj.descricao}` + `(Início: ${formatarData(tarefaObj.dataInicio)}, ` + `(Final: ${formatarData(tarefaObj.dataFinal)}`
+            }
+
+            exibirTarefas();
+            salvarTarefas();
+            inpNumeroTarefaAtender.value = "";
+            if (tarefas.length > 0) {
+                 inpNumeroTarefaAtender.focus();
+            } else {
+                 inpDescricao.focus();
+            }
+        });
+
+        function exibirTarefas() {
+    let listaConteudo = "";
+    if (tarefas.length === 0) {
+        listaConteudo = "Nenhuma tarefa pendente.";
+        respLista.innerText = listaConteudo; 
+    } else {
+        tarefas.forEach((tarefa, i) => {
+            let marcadorDisplay = tarefa.marcador ? `[${tarefa.marcador.toUpperCase()}]` : "[SEM MARCADOR]";
+            let inicioTexto = "";
+            let fimTexto = "";
+
+            if (tarefa.marcador && tarefa.marcador.toLowerCase() === "urgente") {
+                inicioTexto = "<strong>";
+                fimTexto = "</strong>";
+            }
+            
+            listaConteudo += `${inicioTexto}${i + 1}. ${marcadorDisplay} ${tarefa.descricao}\n` +
+                             `   Início: ${formatarData(tarefa.dataInicio)}\n` +
+                             `   Fim: ${formatarData(tarefa.dataFinal)}${fimTexto}\n\n`;
+        });
+        respLista.innerHTML = listaConteudo;
+    }
+}
+        function formatarData(dataInput) {
+            if (!dataInput) return "N/A";
+            const [ano, mes, dia] = dataInput.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        carregarTarefas();
+    </script>
+</body>
+</html>
